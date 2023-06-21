@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4510-4559:4510-4559"  # external service port range
+      - "4566:4566"            # LocalStack Edge Proxy
+    environment:
+      - DEBUG=${DEBUG-}
+      - SERVICES=sns,sqs,s3,dynamodb
+      - DATA_DIR=${DATA_DIR-}
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+      - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./init.sh:/docker-entrypoint-initaws.d/init.sh"
+    networks:
+      - aws
+
+networks:
+  aws:
